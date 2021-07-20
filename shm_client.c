@@ -10,10 +10,10 @@
 #include <time.h>
 
 int main (int argc, char * argv []) {
-    int fd_a = shm_open("/shm_server_a", O_RDWR, 0);
+    int fd_a = shm_open(SHM_A, O_RDWR, 0);
     struct clients_memory *memory_a = mmap(NULL, sizeof(struct clients_memory),
         PROT_READ | PROT_WRITE, MAP_SHARED, fd_a, 0);
-    int fd_b = shm_open("/shm_server_b", O_RDWR, 0);
+    int fd_b = shm_open(SHM_B, O_RDWR, 0);
     struct server_memory *memory_b = mmap(NULL, sizeof(struct server_memory),
         PROT_READ | PROT_WRITE, MAP_SHARED, fd_b, 0);
 
@@ -44,7 +44,7 @@ int main (int argc, char * argv []) {
     // do communication
     struct timespec begin, end;
     clock_gettime(CLOCK_REALTIME, &begin);
-
+    sleep(7);
     strcpy(memory_b->server_buffers[slot], argv[1]);
     sem_post(&memory_b->server_semaphores[slot]);
     sem_wait(&memory_a->clients_semaphores[slot]);

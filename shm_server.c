@@ -25,11 +25,11 @@ struct server_memory *memory_b;
 void * handle_client (void *);
 
 int main () {
-    int fd_a = shm_open("/shm_server_a", O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+    int fd_a = shm_open(SHM_A, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
     ftruncate(fd_a, sizeof(struct clients_memory));
     memory_a = mmap(NULL, sizeof(struct clients_memory), PROT_READ | PROT_WRITE, MAP_SHARED, fd_a, 0);
     
-    int fd_b = shm_open("/shm_server_b", O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+    int fd_b = shm_open(SHM_B, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd_b == -1) {
         printf("%d", errno);
         error("shm_open failed");
@@ -117,6 +117,7 @@ void * handle_client(void * arg) {
             threads_status[me->slot] = 1;
             memory_a->status_waiting = me->slot;
             sem_post(&me->sem);
+            waiting_list -= 1;
             sem_post(&memory_b->server_waiting);
             sem_wait(&memory_b->server_waiting_response);
         }

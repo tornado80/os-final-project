@@ -10,6 +10,9 @@
 #define WAITING_STATUS -1
 #define MAX_CLIENTS 8
 
+#define SHM_A "/shm_a11"
+#define SHM_B "/shm_b11"
+
 struct clients_memory {
     int status;
     int status_waiting;
