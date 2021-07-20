@@ -15,25 +15,7 @@ struct peer_info {
     struct sockaddr_in address;
 };
 
-void clear_screen () {
-    system("clear");
-}
-
-void erase_current_line () {
-    printf(ANSI_SAVE_CURSOR);
-    printf(ANSI_ERASE_LINE);
-    printf(ANSI_RESTORE_CURSOR);
-    fflush(stdout);
-}
-
-sem_t clients_count_semaphore;
-int clients_count = 0;
-pthread_mutex_t clients_count_mutex;
-
 void * handle_client(void *);
-void * show_clients(void *);
-void increase();
-void decrease();
 
 int main(int argc, char* argv[]) {
     char *host;
@@ -76,20 +58,6 @@ int main(int argc, char* argv[]) {
     }
 }
 
-void increase() {
-    pthread_mutex_lock(&clients_count_mutex);
-    clients_count++;
-    pthread_mutex_unlock(&clients_count_mutex);
-    sem_post(&clients_count_semaphore);
-}
-
-void decrease() {
-    pthread_mutex_lock(&clients_count_mutex);
-    clients_count -= 1;
-    pthread_mutex_unlock(&clients_count_mutex);
-    sem_post(&clients_count_semaphore);
-}
-
 void * handle_client(void * arg) {
     struct peer_info * peer = arg;
     short bytes_read = 0;
@@ -109,17 +77,4 @@ void * handle_client(void * arg) {
     decrease();
     free(peer);
     return NULL;
-}
-
-void * show_clients(void * arg) {
-    while(1) {
-        sem_wait(&clients_count_semaphore);
-        pthread_mutex_lock(&clients_count_mutex);
-        int x = clients_count;
-        pthread_mutex_unlock(&clients_count_mutex);
-        printf("\r");
-        erase_current_line();
-        printf("connected clients: %d", x);
-        fflush(stdout);
-    }
 }

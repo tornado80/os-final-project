@@ -31,8 +31,8 @@ int main(int argc, char* argv[]) {
     if (connect(sockfd, (struct sockaddr *)&address, sizeof(address)) == -1)
         error("socket connection failed");
 
-    unsigned char buffer[8194] = {0};
-    unsigned char recv_buffer[8192] = {0};
+    unsigned char buffer[8195] = {0};
+    unsigned char recv_buffer[8193] = {0};
     unsigned short len = strlen(text);
     unsigned short recv_len;
 
